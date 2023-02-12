@@ -5,7 +5,7 @@ type InputProps =  InputHTMLAttributes<HTMLInputElement>
 export function Input({...props}: InputProps){
   return (
     <input
-      className=""
+      className={`py-2 pl-2 rounded-md`}
       {...props}
     />
   )
