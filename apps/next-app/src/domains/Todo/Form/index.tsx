@@ -11,10 +11,14 @@ export function Form() {
   const { register, handleSubmit } = useForm();
 
   async function Submit({ Title, Description }: FormData) {
-    await axios.post('http://localhost:3333/api/todo', {
-      title: Title,
-      description: Description,
-    });
+    try {
+      await axios.post('http://localhost:3333/api/todo', {
+        title: Title,
+        description: Description,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -25,6 +29,7 @@ export function Form() {
       <components.Input placeholder="Title" {...register('Title')} />
       <components.TextArea
         placeholder="Description"
+        rows={5}
         {...register('Description')}
       />
 
