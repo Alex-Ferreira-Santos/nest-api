@@ -1,6 +1,7 @@
 import * as components from 'components';
 import axios from 'axios';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import { useStore } from 'domains/Todo/store';
 
 type FormData = {
   Title: string;
@@ -8,14 +9,20 @@ type FormData = {
 };
 
 export function Form() {
-  const { register, handleSubmit } = useForm();
+  const { fetchData } = useStore((store) => store.actions);
+  const { handleSubmit, control } = useForm();
 
-  async function Submit({ Title, Description }: FormData) {
+  async function Submit({Description, Title}: FormData) {
     try {
-      await axios.post('http://localhost:3333/api/todo', {
-        title: Title,
-        description: Description,
-      });
+      await axios.post(
+        'http://localhost:3333/api/todo',
+        {
+          title: Title,
+          description: Description,
+        },
+      );
+
+      fetchData()
     } catch (err) {
       console.log(err);
     }
@@ -26,11 +33,31 @@ export function Form() {
       onSubmit={handleSubmit(Submit)}
       className="flex flex-col gap-4 p-6 bg-gray-600 rounded-xl"
     >
-      <components.Input placeholder="Title" {...register('Title')} />
-      <components.TextArea
-        placeholder="Description"
-        rows={5}
-        {...register('Description')}
+      <Controller
+        name="Title"
+        defaultValue={''}
+        control={control}
+        render={({ field: { onChange, value } }) => (
+          <components.Input
+            placeholder="Title"
+            onChange={onChange}
+            value={value}
+          />
+        )}
+      />
+
+      <Controller
+        name="Description"
+        control={control}
+        defaultValue={''}
+        render={({ field: { onChange, value } }) => (
+          <components.TextArea
+            placeholder="Description"
+            rows={5}
+            onChange={onChange}
+            value={value}
+          />
+        )}
       />
 
       <components.Button title="Submit" type="submit" />

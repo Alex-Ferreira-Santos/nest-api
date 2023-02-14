@@ -1,42 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Todo } from './entities/todo.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TodoService {
+  constructor(
+    @InjectRepository(Todo)
+    private todoRepository: Repository<Todo>
+  ) {}
+
   create(createTodoDto: CreateTodoDto) {
-    return 'This action adds a new todo';
+    return this.todoRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Todo)
+      .values(createTodoDto)
+      .execute();
   }
 
-  findAll() {
-    const todos = [
-      {
-        title: 'Create a nest API',
-        description: 'Create a nest API to pratice a new backend tecnology',
-      },
-      {
-        title: 'Create a next app',
-        description:
-          'Create a next app to use as a front end application using the nest API',
-      },
-      {
-        title: 'Finish the content',
-        description: 'Complete the journey of knowledge',
-      },
-    ];
-
-    return todos;
+  async findAll() {
+    const response = await this.todoRepository.find();
+    return response;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} todo`;
+    return this.todoRepository.findBy({ id });
   }
 
-  update(id: number, updateTodoDto: UpdateTodoDto) {
-    return `This action updates a #${id} todo`;
+  async update(id: number, updateTodoDto: UpdateTodoDto) {
+    const response = await this.todoRepository
+      .createQueryBuilder()
+      .update()
+      .set(updateTodoDto)
+      .where('id = :id', { id })
+      .execute();
+    console.log('response', response);
+    return response;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} todo`;
+  async remove(id: number) {
+    const response = await this.todoRepository
+      .createQueryBuilder()
+      .delete()
+      .where('id = :id', { id })
+      .execute();
+    console.log('response', response);
+    return response;
   }
 }
