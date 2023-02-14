@@ -1,6 +1,7 @@
 import * as components from 'components';
 import axios from 'axios';
 import { useStore } from 'domains/Todo/store';
+import { FormEvent } from 'react';
 
 export function DeleteModal({
   setShowDeleteModal,
@@ -8,13 +9,15 @@ export function DeleteModal({
   setShowDeleteModal: (boolean) => void;
 }) {
   const selectedData = useStore((store) => store.state.selectedData);
-  async function Submit() {
+  const fetchData = useStore((store) => store.actions.fetchData);
+
+  async function Submit(event: FormEvent<HTMLFormElement>) {
     try {
-      await axios.delete('http://localhost:3333/api/todo', {
-        data: {
-          Id: 1,
-        },
-      });
+      event.preventDefault()
+      await axios.delete(`http://localhost:3333/api/todo/${selectedData.id}`);
+
+      fetchData();
+      setShowDeleteModal(false);
     } catch (err) {
       console.log(err);
     }

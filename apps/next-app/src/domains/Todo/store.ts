@@ -3,6 +3,7 @@ import produce from 'immer';
 import axios from 'axios';
 
 type Data = {
+  id: string
   title: string;
   description: string;
 };

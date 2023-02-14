@@ -15,14 +15,17 @@ export function UpdateModal({
   setShowUpdateModal: (val: boolean) => void;
 }) {
   const selectedData = useStore((store) => store.state.selectedData);
+  const fetchData = useStore((store) => store.actions.fetchData);
   const { control, handleSubmit, reset, setValue } = useForm();
 
   async function Submit({ Title, Description }: FormData) {
     try {
-      await axios.put('http://localhost:3333/api/todo', {
+      await axios.patch(`http://localhost:3333/api/todo/${selectedData.id}`, {
         title: Title,
         description: Description,
       });
+      fetchData()
+      setShowUpdateModal(false)
     } catch (err) {
       console.log(err);
     }
